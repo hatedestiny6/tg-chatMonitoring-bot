@@ -17,6 +17,8 @@ from assets.functions.additional.groups.del_group import del_group
 from assets.functions.additional.groups.del_groups_info import del_groups_info
 from assets.functions.additional.groups.save_groups import save_groups
 
+from assets.functions.additional.special.stop_conv import stop_conv
+
 from assets.functions.commands.groups import groups
 from assets.functions.commands.manage import manage
 from assets.functions.commands.start import start
@@ -47,15 +49,16 @@ def main():
             1: [CallbackQueryHandler(show_dialog)],
             2: [CallbackQueryHandler(add_keywords_info, pattern="ADD"),
                 CallbackQueryHandler(del_keywords_info, pattern="DEL")],
-            "ADD": [MessageHandler(filters.Text("Готово"), save_keywords),
+            "ADD": [MessageHandler(filters.Text("Готово") & ~filters.COMMAND,
+                                   save_keywords),
                     MessageHandler(filters.TEXT & ~filters.COMMAND, add_keywords)],
             "DEL": [CallbackQueryHandler(confirm_del_keywords, pattern="SAVE"),
                     CallbackQueryHandler(del_keywords)]
         },
 
         # Точка прерывания диалога. В данном случае — команда /stop.
-        fallbacks=[MessageHandler(filters.Text(['На главную']),
-                                  stop)]
+        fallbacks=[MessageHandler(filters.COMMAND,
+                                  stop_conv)]
     )
 
     manage_groups_conv = ConversationHandler(
@@ -66,15 +69,16 @@ def main():
         states={
             1: [CallbackQueryHandler(add_groups_info, pattern="ADD"),
                 CallbackQueryHandler(del_groups_info, pattern="DEL")],
-            "ADD": [MessageHandler(filters.Text("Готово"), save_groups),
+            "ADD": [MessageHandler(filters.Text("Готово") & ~filters.COMMAND,
+                                   save_groups),
                     MessageHandler(filters.TEXT & ~filters.COMMAND, add_group)],
             "DEL": [CallbackQueryHandler(confirm_del_groups, pattern="SAVE"),
                     CallbackQueryHandler(del_group)]
         },
 
         # Точка прерывания диалога. В данном случае — команда /stop.
-        fallbacks=[MessageHandler(filters.Text(['На главную']),
-                                  stop)]
+        fallbacks=[MessageHandler(filters.COMMAND,
+                                  stop_conv)]
     )
 
     application.add_handler(manage_keywords_conv)

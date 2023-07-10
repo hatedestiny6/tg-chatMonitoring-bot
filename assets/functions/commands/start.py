@@ -15,11 +15,16 @@ async def start(update: Update, context: ContextTypes):
             )
 
     except KeyError:
-        # context.user_data['groups'] = {
-        #     "@mygroup2007": ["hello", "goodbye"]}
         context.user_data['groups'] = {}
         context.user_data['launched'] = True
-        client = TelegramClient('bot', API_ID, API_HASH)
+        client = TelegramClient('bot', API_ID, API_HASH,
+                                device_model="iPhone 13 Pro Max",
+                                system_version="14.8.1",
+                                app_version="8.4",
+                                lang_code="en",
+                                system_lang_code="en-US")
+        # запускался ли мониторинг
+        context.user_data['monitoring'] = False
         context.user_data['client'] = client
 
         await update.message.reply_text(
